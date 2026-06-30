@@ -1,0 +1,10 @@
+.env
+.env*.local
+.git
+.git-broken-*
+.next
+node_modules
+tsconfig.tsbuildinfo
+npm-debug.log*
+Dockerfile
+README.md
