@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: northledger
+      POSTGRES_PASSWORD: northledger
+      POSTGRES_DB: northledger
+    ports:
+      - "5432:5432"
+    volumes:
+      - northledger-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U northledger -d northledger"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://northledger:northledger@db:5432/northledger?schema=public
+      AUTH_SECRET: replace-this-with-a-long-random-secret
+    ports:
+      - "3000:3000"
+    command: sh -c "npx prisma migrate deploy && npm run start"
+
+volumes:
+  northledger-db:
